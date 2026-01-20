@@ -19,3 +19,11 @@
 #pragma once
 
 #define ORYX_CONFIGURATOR
+
+#define TAPPING_TERM 200
+#define CHORDAL_HOLD
+#define PERMISSIVE_HOLD
+
+// #define TAPPING_TERM 200          // Time in ms to distinguish tap vs hold
+// #define ONESHOT_TAP_CONFLATION    // Allows one-shot to trigger on tap-hold
+// #define ONESHOT_TIMEOUT 3000      // How long the Shift stays "primed"

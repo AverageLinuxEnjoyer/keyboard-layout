@@ -18,39 +18,93 @@
 
 
 
+#include "magic.h"
 #include QMK_KEYBOARD_H
 #include "version.h"
 
 enum layers {
     BASE,  // default layer
+    NUM,   // numbers and misc
     SYMB,  // symbols
     MDIA,  // media keys
 };
 
 enum custom_keycodes {
-    VRSN = SAFE_RANGE,
+    MGC = SAFE_RANGE,
+    SKIP_MGC,
 };
 
-const uint16_t PROGMEM test_combo1[] = {KC_A, KC_B, COMBO_END};
-const uint16_t PROGMEM test_combo2[] = {KC_C, KC_D, COMBO_END};
+uint16_t magic_rules(uint16_t keycode) {
+    switch(keycode) {
+        case KC_A: return KC_O;
+        case KC_G: return KC_S;
+        case KC_H: return KC_Y;
+        case KC_U: return KC_E;
+        case KC_X: return KC_T;
+        case KC_Y: return KC_H;
+        default: return keycode;
+    }
+}
+
+uint16_t skip_magic_rules(uint16_t keycode) {
+    switch(keycode) {
+        case KC_A: return KC_O;
+        case KC_B: return KC_N;
+        case KC_D: return KC_T;
+        case KC_F: return KC_S;
+        case KC_G: return KC_S;
+        case KC_H: return KC_Y;
+        case KC_J: return KC_Y;
+        case KC_K: return KC_T;
+        case KC_L: return KC_R;
+        case KC_M: return KC_K;
+        case KC_O: return KC_A;
+        case KC_P: return KC_N;
+        case KC_Q: return KC_E;
+        case KC_R: return KC_L;
+        case KC_U: return KC_E;
+        case KC_V: return KC_T;
+        case KC_X: return KC_T;
+        case KC_Y: return KC_H;
+        case KC_COMM: return KC_I;
+        case KC_DOT: return KC_I;
+        case KC_MINS: return KC_I;
+        case KC_SLSH: return KC_A;
+        case KC_SCLN: return KC_E;
+        default: return keycode;
+    }
+}
+
+
+const uint16_t PROGMEM q_key[] = {KC_V, KC_X, COMBO_END};
+// const uint16_t PROGMEM test_combo2[] = {KC_C, KC_D, COMBO_END};
 combo_t key_combos[] = {
-    COMBO(test_combo1, KC_ESC),
-    COMBO(test_combo2, LCTL(KC_Z)), // keycodes with modifiers are possible too!
+    COMBO(q_key, KC_Q),
 };
 
 // clang-format off
+// alt, ctrl, shift, linux
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
-        KC_EQL,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_LEFT,           KC_RGHT, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,
-        KC_DEL,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    TG(SYMB),         TG(SYMB), KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
-        KC_BSPC, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_HYPR,           KC_MEH,  KC_H,    KC_J,    KC_K,    KC_L,    LT(MDIA, KC_SCLN), LGUI_T(KC_QUOT),
-        KC_LSFT, LCTL_T(KC_Z),KC_X,KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  RCTL_T(KC_SLSH), KC_RSFT,
-    LT(SYMB,KC_GRV),WEBUSB_PAIR,A(KC_LSFT),KC_LEFT, KC_RGHT,  LALT_T(KC_APP),    RCTL_T(KC_ESC),   KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, MO(SYMB),
-                                            KC_SPC,  KC_BSPC, KC_LGUI,           KC_LALT,  KC_TAB,  KC_ENT
+        _______,       _______,       _______,       _______,       _______,       _______,       _______,         _______,        _______,       _______,       _______,       _______,       _______,       _______,
+        _______,       _______,       KC_B,          KC_G,          KC_D,          KC_K,          _______,         _______,        KC_Z,          KC_C,          KC_O,          KC_U,          _______,       _______,
+        _______,       KC_H,          ALT_T(KC_N),   CTL_T(KC_S),   SFT_T(KC_T),   GUI_T(KC_M),   _______,         _______,        GUI_T(MGC),    SFT_T(SKIP_MGC),CTL_T(KC_A),  ALT_T(KC_E),   KC_I,          _______,
+        _______,       KC_Y,          KC_P,          KC_F,          KC_V,          KC_X,                                           KC_MINS,       KC_W,          KC_DOT,        KC_COMM,       KC_SLSH,       _______,
+        _______,       _______,       _______,       _______,       LT(NUM, KC_R),                _______,         _______,                       LT(SYMB, KC_J),_______,       _______,       _______,       _______,
+                                                                    KC_L,          KC_NO,         KC_NO,           KC_NO,          KC_NO,         KC_SPC
+    ),
+
+    [NUM] = LAYOUT(
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_9,    KC_5,    KC_0,    KC_3,    KC_7,    KC_NO,            KC_NO,    KC_6,    KC_2,    KC_1,    KC_4,    KC_8,    KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TAB,  KC_ENT,                              KC_NO,   KC_BSPC, KC_ESC,  KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,            KC_NO,             KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+                                            KC_NO,   KC_NO,   KC_NO,            KC_NO,    KC_NO,   KC_NO
     ),
 
     [SYMB] = LAYOUT(
-        VRSN,    KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,           _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
+        KC_NO,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,           _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
         _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,           _______, KC_UP,   KC_7,    KC_8,    KC_9,    KC_ASTR, KC_F12,
         _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,  _______,           _______, KC_DOWN, KC_4,    KC_5,    KC_6,    KC_PLUS, _______,
         _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD,                             KC_AMPR, KC_1,    KC_2,    KC_3,    KC_BSLS, _______,
@@ -69,12 +123,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (record->event.pressed) {
-        switch (keycode) {
-        case VRSN:
-            SEND_STRING (QMK_KEYBOARD "/" QMK_KEYMAP " @ " QMK_VERSION);
-            return false;
-        }
+    if(!record->event.pressed) {
+        return true;
     }
-    return true;
+
+    switch (keycode) {
+        case MGC:
+            apply_magic(magic_rules, skip_magic_rules, MGC);
+            return false;
+
+        case SKIP_MGC:
+            apply_skip_magic(magic_rules, skip_magic_rules, SKIP_MGC);
+            return false;
+
+        default:
+            record_key(keycode);
+            return true;
+    }
 }
+
