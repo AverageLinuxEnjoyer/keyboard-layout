@@ -19,6 +19,7 @@
 
 
 #include "magic.h"
+#include "adaptive.h"
 #include QMK_KEYBOARD_H
 #include "version.h"
 
@@ -30,8 +31,7 @@ enum layers {
 };
 
 enum custom_keycodes {
-    MGC = SAFE_RANGE,
-    SKIP_MGC,
+    CUST_KEY = SAFE_RANGE,
 };
 
 uint16_t magic_rules(uint16_t keycode) {
@@ -77,9 +77,11 @@ uint16_t skip_magic_rules(uint16_t keycode) {
 
 
 const uint16_t PROGMEM q_key[] = {KC_V, KC_X, COMBO_END};
+const uint16_t PROGMEM backspace_key[] = {KC_F13, KC_F14, COMBO_END};
 // const uint16_t PROGMEM test_combo2[] = {KC_C, KC_D, COMBO_END};
 combo_t key_combos[] = {
     COMBO(q_key, KC_Q),
+    COMBO(backspace_key, KC_BSPC),
 };
 
 // clang-format off
@@ -88,9 +90,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
         _______,       _______,       _______,       _______,       _______,       _______,       _______,         _______,        _______,       _______,       _______,       _______,       _______,       _______,
         _______,       _______,       KC_B,          KC_G,          KC_D,          KC_K,          _______,         _______,        KC_Z,          KC_C,          KC_O,          KC_U,          _______,       _______,
-        _______,       KC_H,          ALT_T(KC_N),   CTL_T(KC_S),   SFT_T(KC_T),   GUI_T(KC_M),   _______,         _______,        GUI_T(MGC),    SFT_T(SKIP_MGC),CTL_T(KC_A),  ALT_T(KC_E),   KC_I,          _______,
+        _______,       KC_H,          KC_N,          KC_S,          KC_T,          KC_M,          _______,         _______,        KC_F13,        KC_F14,        KC_A,          KC_E,         KC_I,          _______,
         _______,       KC_Y,          KC_P,          KC_F,          KC_V,          KC_X,                                           KC_MINS,       KC_W,          KC_DOT,        KC_COMM,       KC_SLSH,       _______,
-        _______,       _______,       _______,       _______,       LT(NUM, KC_R),                _______,         _______,                       LT(SYMB, KC_J),_______,       _______,       _______,       _______,
+        _______,       _______,       _______,       _______,       KC_R,                    _______,         _______,                            KC_J,          _______,       _______,       _______,       _______,
                                                                     KC_L,          KC_NO,         KC_NO,           KC_NO,          KC_NO,         KC_SPC
     ),
 
@@ -104,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [SYMB] = LAYOUT(
-        KC_NO,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,           _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
+        _______, _______, _______, _______,  _______, _______,_______,           _______, _______, _______, _______, _______, _______, _______,
         _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,           _______, KC_UP,   KC_7,    KC_8,    KC_9,    KC_ASTR, KC_F12,
         _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,  _______,           _______, KC_DOWN, KC_4,    KC_5,    KC_6,    KC_PLUS, _______,
         _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD,                             KC_AMPR, KC_1,    KC_2,    KC_3,    KC_BSLS, _______,
@@ -123,21 +125,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if(!record->event.pressed) {
+    if (!record->event.pressed) {
         return true;
     }
 
-    switch (keycode) {
-        case MGC:
-            apply_magic(magic_rules, skip_magic_rules, MGC);
-            return false;
+    if (try_adaptive_key(keycode)) {
+        return false;
+    }
 
-        case SKIP_MGC:
-            apply_skip_magic(magic_rules, skip_magic_rules, SKIP_MGC);
+    switch (keycode) {
+        case KC_B:
+            /* Arm: after B, H → Y */
+            arm_adaptive_key(KC_B, KC_H, KC_Y);
+
+            record_normal_key(KC_B);
+            return true;
+        case KC_F13:
+            apply_magic(magic_rules, skip_magic_rules, KC_F13);
+            return false;   // stop QMK from also sending F13
+
+        case KC_F14:
+            apply_skip_magic(magic_rules, skip_magic_rules, KC_F14);
             return false;
 
         default:
-            record_key(keycode);
+            record_normal_key(keycode);
             return true;
     }
 }
