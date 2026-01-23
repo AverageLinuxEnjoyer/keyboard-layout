@@ -10,23 +10,35 @@
 
 #ifndef MAGIC_HISTORY_DEPTH
 #define MAGIC_HISTORY_DEPTH 8   // change as desired at compile time
+#define MAX_MAGIC_RESULT 4      // Maximum characters a magic key can output
 #endif
 
 /* ==========================================================
  * PUBLIC API (what your keymap.c uses)
  * ========================================================== */
 
-uint16_t apply_magic(
-    uint16_t (*magic_rules)(uint16_t),
-    uint16_t (*skip_rules)(uint16_t),
-    uint16_t magic_keycode
-);
+typedef struct {
+    uint16_t codes[MAX_MAGIC_RESULT];
+    uint8_t count;
+} magic_result_t;
 
-uint16_t apply_skip_magic(
-    uint16_t (*magic_rules)(uint16_t),
-    uint16_t (*skip_rules)(uint16_t),
-    uint16_t skip_keycode
-);
+/* Helper to create results easily */
+static inline magic_result_t magic_out(uint8_t count, ...) {
+    magic_result_t res = { .count = count };
+    va_list ap;
+    va_start(ap, count);
+    for (int i = 0; i < count && i < MAX_MAGIC_RESULT; i++) {
+        res.codes[i] = (uint16_t)va_arg(ap, int);
+    }
+    va_end(ap);
+    return res;
+}
+
+// Function signatures now use the struct
+typedef magic_result_t (*magic_rule_fn)(uint16_t);
+
+uint16_t apply_magic(magic_rule_fn magic_rules, magic_rule_fn skip_rules, uint16_t magic_keycode);
+uint16_t apply_skip_magic(magic_rule_fn magic_rules, magic_rule_fn skip_rules, uint16_t skip_keycode);
 
 bool recordable_key(uint16_t keycode);
 
@@ -112,45 +124,51 @@ static key_event_t find_target_for_skip_magic(void) {
  * PUBLIC FUNCTIONS
  * ========================================================== */
 
-uint16_t apply_magic(
-    uint16_t (*magic_rules)(uint16_t),
-    uint16_t (*skip_rules)(uint16_t),
-    uint16_t magic_keycode
-) {
+uint16_t apply_magic(magic_rule_fn magic_rules, magic_rule_fn skip_rules, uint16_t magic_keycode) {
     key_event_t target = find_target_for_magic();
+    uint16_t input = target.was_magic ? target.output : target.original;
 
-    uint16_t input = target.was_magic
-        ? target.output
-        : target.original;
+    magic_result_t result = magic_rules(input);
 
-    uint16_t result = magic_rules(input);
+    for (int i = 0; i < result.count; i++) {
+        tap_code16(result.codes[i]);
+    }
 
-    tap_code16(result);
+    // We store the LAST code produced in the history so the next magic key has a reference
+    uint16_t last_code = result.count > 0 ? result.codes[result.count - 1] : KC_NO;
+    push_history(target.original, last_code, true);
 
-    /* IMPORTANT: store the ORIGINAL key, not KC_F13 */
-    push_history(target.original, result, true);
-
-    return result;
+    return last_code;
 }
 
 uint16_t apply_skip_magic(
-    uint16_t (*magic_rules)(uint16_t),
-    uint16_t (*skip_rules)(uint16_t),
+    magic_rule_fn magic_rules,
+    magic_rule_fn skip_rules,
     uint16_t skip_keycode
 ) {
+    // 1. Find the target (the second-to-last real key)
     key_event_t target = find_target_for_skip_magic();
 
+    // 2. Determine what to feed into the rules
     uint16_t input = target.was_magic
         ? target.output
         : target.original;
 
-    uint16_t result = skip_rules(input);
+    // 3. Get the multi-key result from your skip rules
+    magic_result_t result = skip_rules(input);
 
-    tap_code16(result);
+    // 4. Tap all resulting keys in order
+    for (int i = 0; i < result.count; i++) {
+        tap_code16(result.codes[i]);
+    }
 
-    push_history(target.original, result, true);
+    // 5. Store the result in history
+    // We record the physical skip_keycode as the 'original' if you want
+    // to track the skip key itself, OR target.original to track the 'subject'
+    uint16_t last_output = (result.count > 0) ? result.codes[result.count - 1] : KC_NO;
+    push_history(target.original, last_output, true);
 
-    return result;
+    return last_output;
 }
 
 /* ==========================================================
