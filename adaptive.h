@@ -5,7 +5,7 @@
 
 static bool adaptive_armed = false;
 static uint16_t adaptive_trigger = KC_NO;   // e.g. KC_B
-static uint16_t adaptive_target  = KC_NO;   // e.g. KC_M
+static uint16_t adaptive_target  = KC_NO;   // e.g. KC_H
 static uint16_t adaptive_output  = KC_NO;   // e.g. KC_Y
 static uint16_t adaptive_timer   = 0;
 
