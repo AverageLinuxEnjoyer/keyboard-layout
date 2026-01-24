@@ -77,42 +77,44 @@ magic_result_t skip_magic_rules(uint16_t keycode) {
 }
 
 
-const uint16_t PROGMEM q_key[] = {KC_V, KC_X, COMBO_END};
-const uint16_t PROGMEM backspace_key[] = {KC_F13, KC_F14, COMBO_END};
+const uint16_t PROGMEM q_key[] = {KC_B, KC_G, COMBO_END};
+const uint16_t PROGMEM x_key[] = {KC_V, OSL(NUM), COMBO_END};
+const uint16_t PROGMEM underscore_key[] = {KC_W, OSL(SYMB), COMBO_END};
 // const uint16_t PROGMEM test_combo2[] = {KC_C, KC_D, COMBO_END};
 combo_t key_combos[] = {
     COMBO(q_key, KC_Q),
-    COMBO(backspace_key, KC_BSPC),
+    COMBO(x_key, KC_X),
+    COMBO(underscore_key, KC_UNDS),
 };
 
 // clang-format off
 // alt, ctrl, shift, linux
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
-        _______,       _______,       _______,       _______,       _______,       _______,       _______,         _______,        _______,       _______,       _______,       _______,       _______,       _______,
-        _______,       _______,       KC_B,          KC_G,          KC_D,          KC_K,          _______,         _______,        KC_Z,          KC_C,          KC_O,          KC_U,          _______,       _______,
-        _______,       KC_H,          KC_N,          KC_S,          KC_T,          KC_M,          _______,         _______,        KC_F13,        KC_F14,        KC_A,          KC_E,         KC_I,          _______,
-        _______,       KC_Y,          KC_P,          KC_F,          KC_V,          KC_X,                                           KC_MINS,       KC_W,          KC_DOT,        KC_COMM,       KC_SLSH,       _______,
-        _______,       _______,       _______,       _______,       KC_R,                    _______,         _______,                            KC_J,          _______,       _______,       _______,       _______,
-                                                                    KC_L,          KC_NO,         KC_NO,           KC_NO,          KC_NO,         KC_SPC
+        _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    KC_B,       KC_G,       KC_D,       KC_K,       _______,         _______,     KC_Z,       KC_C,       KC_O,       KC_U,       _______,    _______,
+        _______,    KC_H,       KC_N,       KC_S,       KC_T,       KC_M,       _______,         _______,     KC_F13,     KC_F14,     KC_A,       KC_E,       KC_I,       _______,
+        _______,    KC_Y,       KC_P,       KC_F,       KC_V,       OSL(NUM),                                 OSL(SYMB),  KC_W,       KC_DOT,     KC_COMM,    KC_SLSH,    _______,
+        _______,    _______,    _______,    _______,    KC_R,                   _______,         _______,                 KC_J,       _______,    _______,    _______,    _______,
+                                                        KC_L,       KC_NO,      KC_NO,           KC_NO,       KC_NO,      KC_SPC
     ),
 
     [NUM] = LAYOUT(
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_9,    KC_5,    KC_0,    KC_3,    KC_7,    KC_NO,            KC_NO,    KC_6,    KC_2,    KC_1,    KC_4,    KC_8,    KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_TAB,  KC_ENT,                              KC_NO,   KC_BSPC, KC_ESC,  KC_NO,   KC_NO,   KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_NO,            KC_NO,             KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-                                            KC_NO,   KC_NO,   KC_NO,            KC_NO,    KC_NO,   KC_NO
+        _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     _______,    _______,    _______,    _______,    _______,    _______,
+        _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     KC_LEFT,    KC_DOWN,    KC_UP,      KC_RGHT,    _______,    _______,
+        _______,    KC_9,       KC_5,       KC_0,       KC_3,       KC_7,       _______,         _______,     KC_6,       KC_2,       KC_1,       KC_4,       KC_8,       _______,
+        _______,    _______,    _______,    _______,    KC_X,       _______,                                  KC_TAB,     KC_ENT,     KC_BSPC,    KC_ESC,     _______,    _______,
+        _______,    _______,    _______,    _______,    _______,                _______,         _______,                 _______,    _______,    _______,    _______,    _______,
+                                                        _______,    _______,    _______,         _______,     _______,    _______
     ),
 
     [SYMB] = LAYOUT(
         _______, _______, _______, _______,  _______, _______,_______,           _______, _______, _______, _______, _______, _______, _______,
-        _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,           _______, KC_UP,   KC_7,    KC_8,    KC_9,    KC_ASTR, KC_F12,
-        _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,  _______,           _______, KC_DOWN, KC_4,    KC_5,    KC_6,    KC_PLUS, _______,
-        _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD,                             KC_AMPR, KC_1,    KC_2,    KC_3,    KC_BSLS, _______,
-        EE_CLR,  _______, _______, _______, _______,          RM_VALU,           RM_TOGG,          _______, KC_DOT,  KC_0,    KC_EQL,  _______,
-                                            RM_HUED, RM_VALD, RM_HUEU, TOGGLE_LAYER_COLOR,_______, _______
+        _______, _______, KC_EXLM, KC_LCBR, KC_RCBR, KC_PIPE, _______,           _______, KC_TILD, KC_COLN, KC_SCLN, KC_NUBS, _______, _______,
+        _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_AMPR, _______,           _______, KC_PLUS, KC_MINS, KC_QUOT, KC_DQUO, KC_GRV,  _______,
+        _______, _______, KC_CIRC, KC_LBRC, KC_RBRC, KC_ASTR,                             _______, KC_UNDS,  KC_EQL, _______, _______, _______,
+        _______, _______, _______, _______, _______,          _______,           _______,          _______, _______, _______, _______,  _______,
+                                            _______, _______, _______,           _______, _______, _______
     ),
 
     [MDIA] = LAYOUT(
