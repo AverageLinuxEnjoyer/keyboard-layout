@@ -27,7 +27,6 @@ enum layers {
     BASE,  // default layer
     NUM,   // numbers and misc
     SYMB,  // symbols
-    MDIA,  // media keys
 };
 
 enum custom_keycodes {
@@ -93,15 +92,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
         _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     _______,    _______,    _______,    _______,    _______,    _______,
         _______,    _______,    KC_B,       KC_G,       KC_D,       KC_K,       _______,         _______,     KC_Z,       KC_C,       KC_O,       KC_U,       _______,    _______,
-        _______,    KC_H,       KC_N,       KC_S,       KC_T,       KC_M,       _______,         _______,     KC_F13,     KC_F14,     KC_A,       KC_E,       KC_I,       _______,
-        _______,    KC_Y,       KC_P,       KC_F,       KC_V,       OSL(NUM),                                 OSL(SYMB),  KC_W,       KC_DOT,     KC_COMM,    KC_SLSH,    _______,
+        _______,    KC_H,    LALT_T(KC_N),LCTL_T(KC_S),LSFT_T(KC_T),LGUI_T(KC_M),_______,       _______,GUI_T(KC_F13),LSFT_T(KC_F14),LCTL_T(KC_A),LALT_T(KC_E),      KC_I,       _______,
+        _______,    KC_Y,       KC_P,       KC_F,       KC_V,       OSL(NUM),                                 OSL(SYMB),  KC_W,       KC_COMM,     KC_DOT,    KC_SLSH,    _______,
         _______,    _______,    _______,    _______,    KC_R,                   _______,         _______,                 KC_J,       _______,    _______,    _______,    _______,
                                                         KC_L,       KC_NO,      KC_NO,           KC_NO,       KC_NO,      KC_SPC
     ),
 
     [NUM] = LAYOUT(
         _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     KC_LEFT,    KC_DOWN,    KC_UP,      KC_RGHT,    _______,    _______,
+        _______,    _______,    OS_LALT,    OS_LCTL,    OS_LSFT,    OS_LGUI,    _______,         _______,     KC_LEFT,    KC_DOWN,    KC_UP,      KC_RGHT,    _______,    _______,
         _______,    KC_9,       KC_5,       KC_0,       KC_3,       KC_7,       _______,         _______,     KC_6,       KC_2,       KC_1,       KC_4,       KC_8,       _______,
         _______,    _______,    _______,    _______,    KC_X,       _______,                                  KC_TAB,     KC_ENT,     KC_BSPC,    KC_ESC,     _______,    _______,
         _______,    _______,    _______,    _______,    _______,                _______,         _______,                 _______,    _______,    _______,    _______,    _______,
@@ -116,18 +115,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______,          _______,           _______,          _______, _______, _______, _______,  _______,
                                             _______, _______, _______,           _______, _______, _______
     ),
-
-    [MDIA] = LAYOUT(
-        LED_LEVEL,_______,_______, _______, _______, _______, _______,           _______, _______, _______, _______, _______, _______, QK_BOOT,
-        _______, _______, _______, MS_UP,   _______, _______, _______,           _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, MS_LEFT, MS_DOWN, MS_RGHT, _______, _______,           _______, _______, _______, _______, _______, _______, KC_MPLY,
-        _______, _______, _______, _______, _______, _______,                             _______, _______, KC_MPRV, KC_MNXT, _______, _______,
-        _______, _______, _______, MS_BTN1, MS_BTN2,         _______,            _______,          KC_VOLU, KC_VOLD, KC_MUTE, _______, _______,
-                                            _______, _______, _______,           _______, _______, _______
-    ),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // extract the base keycode if it's a Mod-Tap or Layer-Tap
+    uint16_t base_keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
+
     if (!record->event.pressed) {
         return true;
     }
@@ -136,24 +129,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
     }
 
-    switch (keycode) {
+    switch (base_keycode) {
         case KC_B:
             /* Arm: after B, H → Y */
             arm_adaptive_key(KC_B, KC_H, KC_Y);
 
             record_normal_key(KC_B);
             return true;
+        case KC_R:
+            /* Arm: after R, / → L */
+            arm_adaptive_key(KC_R, KC_SLSH, KC_L);
+
+            record_normal_key(KC_R);
+            return true;
         case KC_F13:
-            apply_magic(magic_rules, skip_magic_rules, KC_F13);
-            return false;   // stop QMK from also sending F13
-
+            // Only fire magic if the key was TAPPED
+            // If count > 0, it's a tap. If 0, it's a hold for the modifier.
+            if (record->tap.count > 0) {
+                apply_magic(magic_rules, skip_magic_rules, KC_F13);
+                return false; // Don't send the F13 tap to the OS
+            }
+            break; // Let QMK handle the 'hold' for GUI_T
         case KC_F14:
-            apply_skip_magic(magic_rules, skip_magic_rules, KC_F14);
-            return false;
-
+            if (record->tap.count > 0) {
+                apply_skip_magic(magic_rules, skip_magic_rules, KC_F14);
+                return false;
+            }
+            break;
         default:
-            record_normal_key(keycode);
+            record_normal_key(base_keycode);
             return true;
     }
+
+    return true;
 }
 
