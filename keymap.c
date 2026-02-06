@@ -66,11 +66,6 @@ magic_result_t skip_magic_rules(uint16_t keycode) {
         case KC_V: return magic_out(1, KC_T);
         case KC_X: return magic_out(1, KC_T);
         case KC_Y: return magic_out(1, KC_H);
-        case KC_COMM: return magic_out(1, KC_I);
-        case KC_DOT: return magic_out(1, KC_I);
-        case KC_MINS: return magic_out(1, KC_I);
-        case KC_SLSH: return magic_out(1, KC_A);
-        case KC_SCLN: return magic_out(1, KC_E);
         default: return magic_out(1, keycode);
     }
 }
@@ -90,30 +85,30 @@ combo_t key_combos[] = {
 // alt, ctrl, shift, linux
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
-        _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    _______,    KC_B,       KC_G,       KC_D,       KC_K,       _______,         _______,     KC_Z,       KC_C,       KC_O,       KC_U,       _______,    _______,
-        _______,    KC_H,    LALT_T(KC_N),LCTL_T(KC_S),LSFT_T(KC_T),LGUI_T(KC_M),_______,       _______,GUI_T(KC_F13),LSFT_T(KC_F14),LCTL_T(KC_A),LALT_T(KC_E),      KC_I,       _______,
-        _______,    KC_Y,       KC_P,       KC_F,       KC_V,       OSL(NUM),                                 OSL(SYMB),  KC_W,       KC_COMM,     KC_DOT,    KC_SLSH,    _______,
-        _______,    _______,    _______,    _______,    KC_R,                   _______,         _______,                 KC_J,       _______,    _______,    _______,    _______,
-                                                        KC_L,       KC_NO,      KC_NO,           KC_NO,       KC_NO,      KC_SPC
+        _______,     _______,      _______,      _______,      _______,      _______,      _______,         _______,      _______,      _______,      _______,      _______,      _______,     _______,
+        _______,     _______,      KC_B,         KC_G,         KC_D,         KC_K,         _______,         _______,      KC_Z,         KC_C,         KC_O,         KC_U,         _______,     _______,
+        _______,     KC_H,         ALT_T(KC_N),  CTL_T(KC_S),  SFT_T(KC_T),  GUI_T(KC_M),  _______,         _______,      GUI_T(KC_F13),SFT_T(KC_F14),CTL_T(KC_A),  ALT_T(KC_E),  KC_I,        _______,
+        _______,     KC_Y,         KC_P,         KC_F,         KC_V,         KC_X,                                        KC_MINS,      KC_W,         KC_COMM,      KC_DOT,       KC_SLSH,     _______,
+        _______,     _______,      _______,      _______,      LT(NUM, KC_R),              _______,         _______,                    LT(SYMB,KC_J),_______,      _______,      _______,     _______,
+                                                               KC_L,        KC_NO,         KC_NO,           KC_NO,        KC_NO,        KC_SPC
     ),
 
     [NUM] = LAYOUT(
-        _______,    _______,    _______,    _______,    _______,    _______,    _______,         _______,     _______,    _______,    _______,    _______,    _______,    _______,
-        _______,    _______,    OS_LALT,    OS_LCTL,    OS_LSFT,    OS_LGUI,    _______,         _______,     KC_LEFT,    KC_DOWN,    KC_UP,      KC_RGHT,    _______,    _______,
-        _______,    KC_9,       KC_5,       KC_0,       KC_3,       KC_7,       _______,         _______,     KC_6,       KC_2,       KC_1,       KC_4,       KC_8,       _______,
-        _______,    _______,    _______,    _______,    KC_X,       _______,                                  KC_TAB,     KC_ENT,     KC_BSPC,    KC_ESC,     _______,    _______,
-        _______,    _______,    _______,    _______,    _______,                _______,         _______,                 _______,    _______,    _______,    _______,    _______,
-                                                        _______,    _______,    _______,         _______,     _______,    _______
+        _______,     _______,      _______,      _______,      _______,      _______,      _______,         _______,      _______,      _______,      _______,      _______,      _______,     _______,
+        _______,     _______,      KC_Q,         _______,      _______,      _______,      _______,         _______,      KC_LEFT,      KC_DOWN,      KC_UP,        KC_RGHT,      _______,     _______,
+        _______,     KC_9,         ALT_T(KC_5),  CTL_T(KC_0),  SFT_T(KC_3),  GUI_T(KC_7),  _______,         _______,      GUI_T(KC_6),  SFT_T(KC_2),  CTL_T(KC_1),  ALT_T(KC_4),  KC_8,        _______,
+        _______,     _______,      _______,      _______,      _______,      _______,                                     KC_TAB,       KC_ENT,       KC_BSPC,      KC_ESC,       _______,     _______,
+        _______,     _______,      _______,      _______,      _______,                    _______,         _______,                    _______,      _______,      _______,      _______,     _______,
+                                                               _______,      _______,      _______,         _______,      _______,      _______
     ),
 
     [SYMB] = LAYOUT(
-        _______, _______, _______, _______,  _______, _______,_______,           _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, KC_EXLM, KC_LCBR, KC_RCBR, KC_PIPE, _______,           _______, KC_TILD, KC_COLN, KC_SCLN, KC_NUBS, _______, _______,
-        _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_AMPR, _______,           _______, KC_PLUS, KC_MINS, KC_QUOT, KC_DQUO, KC_GRV,  _______,
-        _______, _______, KC_CIRC, KC_LBRC, KC_RBRC, KC_ASTR,                             _______, KC_UNDS,  KC_EQL, _______, _______, _______,
-        _______, _______, _______, _______, _______,          _______,           _______,          _______, _______, _______, _______,  _______,
-                                            _______, _______, _______,           _______, _______, _______
+        _______,     _______,      _______,      _______,      _______,      _______,     _______,          _______,      _______,      _______,      _______,      _______,      _______,     _______,
+        _______,     _______,      KC_EXLM,      KC_LCBR,      KC_RCBR,      KC_PIPE,     _______,          _______,      KC_TILD,      KC_COLN,      KC_SCLN,      KC_NUBS,      _______,     _______,
+        _______,     KC_HASH, ALT_T(KC_DLR),CTL_T(KC_LPRN),SFT_T(KC_RPRN),GUI_T(KC_AMPR), _______,          _______,   GUI_T(KC_PLUS),SFT_T(KC_MINS),CTL_T(KC_QUOT),ALT_T(KC_DQUO),KC_GRV,     _______,
+        _______,     _______,      KC_CIRC,      KC_LBRC,      KC_RBRC,      KC_ASTR,                                     _______,      KC_UNDS,      KC_EQL,       _______,      _______,     _______,
+        _______,     _______,      _______,      _______,      _______,                   _______,          _______,                    _______,      _______,      _______,      _______,     _______,
+                                                               _______,      _______,     _______,          _______,      _______,      _______
     ),
 };
 

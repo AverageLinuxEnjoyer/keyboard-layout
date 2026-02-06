@@ -22,6 +22,8 @@
 
 #define TAPPING_TERM 200
 #define PERMISSIVE_HOLD
+#define CHORDAL_HOLD
+// #define FLOW_TAP_TERM 150
 
 // #define TAPPING_TERM 200          // Time in ms to distinguish tap vs hold
 // #define ONESHOT_TAP_CONFLATION    // Allows one-shot to trigger on tap-hold
