@@ -33,9 +33,17 @@ enum custom_keycodes {
     CUST_KEY = SAFE_RANGE,
 };
 
+#define MY_PLUS KC_F15
+#define MY_DLR KC_F16
+#define MY_AMPR KC_F17
+#define MY_UNDS KC_F18
+#define MY_DQUO KC_F19
+#define MY_LPRN KC_F20
+#define MY_RPRN KC_F21
+
 magic_result_t magic_rules(uint16_t keycode) {
     switch(keycode) {
-        case KC_I: return magic_out(2, KC_O, KC_U);
+        // case KC_I: return magic_out(2, KC_O, KC_U);
         case KC_A: return magic_out(1, KC_O);
         case KC_G: return magic_out(1, KC_S);
         case KC_H: return magic_out(1, KC_Y);
@@ -72,13 +80,13 @@ magic_result_t skip_magic_rules(uint16_t keycode) {
 
 
 const uint16_t PROGMEM q_key[] = {KC_B, KC_G, COMBO_END};
-const uint16_t PROGMEM x_key[] = {KC_V, OSL(NUM), COMBO_END};
-const uint16_t PROGMEM underscore_key[] = {KC_W, OSL(SYMB), COMBO_END};
+// const uint16_t PROGMEM x_key[] = {KC_V, OSL(NUM), COMBO_END};
+// const uint16_t PROGMEM underscore_key[] = {KC_W, OSL(SYMB), COMBO_END};
 // const uint16_t PROGMEM test_combo2[] = {KC_C, KC_D, COMBO_END};
 combo_t key_combos[] = {
     COMBO(q_key, KC_Q),
-    COMBO(x_key, KC_X),
-    COMBO(underscore_key, KC_UNDS),
+    // COMBO(x_key, KC_X),
+    // COMBO(underscore_key, KC_UNDS),
 };
 
 // clang-format off
@@ -105,10 +113,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [SYMB] = LAYOUT(
         _______,     _______,      _______,      _______,      _______,      _______,     _______,          _______,      _______,      _______,      _______,      _______,      _______,     _______,
         _______,     _______,      KC_EXLM,      KC_LCBR,      KC_RCBR,      KC_PIPE,     _______,          _______,      KC_TILD,      KC_COLN,      KC_SCLN,      KC_NUBS,      _______,     _______,
-        _______,     KC_HASH, ALT_T(KC_DLR),CTL_T(KC_LPRN),SFT_T(KC_RPRN),GUI_T(KC_AMPR), _______,          _______,   GUI_T(KC_PLUS),SFT_T(KC_MINS),CTL_T(KC_QUOT),ALT_T(KC_DQUO),KC_GRV,     _______,
-        _______,     _______,      KC_CIRC,      KC_LBRC,      KC_RBRC,      KC_ASTR,                                     _______,      KC_UNDS,      KC_EQL,       _______,      _______,     _______,
+        _______,     KC_HASH, ALT_T(MY_DLR),CTL_T(MY_LPRN),SFT_T(MY_RPRN),GUI_T(MY_AMPR), _______,          _______,  GUI_T(MY_PLUS),SFT_T(MY_UNDS),CTL_T(KC_QUOT),ALT_T(MY_DQUO),KC_GRV,     _______,
+        _______,     _______,      KC_CIRC,      KC_LBRC,      KC_RBRC,      KC_ASTR,                                     KC_MINS,      KC_EQL,       KC_LABK,      KC_RABK,      _______,     _______,
         _______,     _______,      _______,      _______,      _______,                   _______,          _______,                    _______,      _______,      _______,      _______,     _______,
-                                                               _______,      _______,     _______,          _______,      _______,      _______
+                                                               KC_SPC,       _______,     _______,          _______,      _______,      _______
     ),
 };
 
@@ -125,6 +133,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (base_keycode) {
+        case MY_DLR:
+            if (record->event.pressed) {
+                tap_code16(S(KC_DLR));
+            }
+            return false;
+        case MY_LPRN:
+            if (record->event.pressed) {
+                tap_code16(S(KC_LPRN));
+            }
+            return false;
+        case MY_RPRN:
+            if (record->event.pressed) {
+                tap_code16(S(KC_RPRN));
+            }
+            return false;
+        case MY_AMPR:
+            if (record->event.pressed) {
+                tap_code16(S(KC_AMPR));
+            }
+            return false;
+        case MY_PLUS:
+            if (record->event.pressed) {
+                tap_code16(S(KC_EQL));
+            }
+            return false;
+        case MY_DQUO:
+            if (record->event.pressed) {
+                tap_code16(S(KC_DQUO));
+            }
+            return false;
+        case MY_UNDS:
+            if (record->event.pressed) {
+                tap_code16(S(KC_UNDS));
+            }
+            return false;
         case KC_B:
             /* Arm: after B, H → Y */
             arm_adaptive_key(KC_B, KC_H, KC_Y);
@@ -132,10 +175,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             record_normal_key(KC_B);
             return true;
         case KC_R:
-            /* Arm: after R, / → L */
-            arm_adaptive_key(KC_R, KC_SLSH, KC_L);
+            /* Arm: after R, - → L */
+            arm_adaptive_key(KC_R, KC_MINS, KC_L);
 
             record_normal_key(KC_R);
+            return true;
+        case KC_L:
+            /* Arm: after L, - → R */
+            arm_adaptive_key(KC_L, KC_MINS, KC_R);
+
+            record_normal_key(KC_L);
+            return true;
+        case KC_G:
+            /* Arm: after G, - → G */
+            arm_adaptive_key(KC_G, KC_MINS, KC_G);
+
+            record_normal_key(KC_G);
             return true;
         case KC_F13:
             // Only fire magic if the key was TAPPED

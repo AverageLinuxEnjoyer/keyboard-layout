@@ -50,6 +50,7 @@ typedef struct {
     uint16_t original;  // what was physically pressed
     uint16_t output;    // what was actually sent
     bool was_magic;     // came from magic / skip-magic?
+    uint16_t time;      // timer_read() at event time
 } key_event_t;
 
 /* Ring buffer history */
@@ -65,9 +66,10 @@ static void push_history(uint16_t original, uint16_t output, bool was_magic) {
     history_head = (history_head + 1) % MAGIC_HISTORY_DEPTH;
 
     history[history_head] = (key_event_t){
-        .original = original,
-        .output = output,
+        .original  = original,
+        .output    = output,
         .was_magic = was_magic,
+        .time      = timer_read(),
     };
 
     if (history_count < MAGIC_HISTORY_DEPTH) {
